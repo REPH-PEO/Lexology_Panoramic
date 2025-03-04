@@ -32,9 +32,9 @@ def xml_cleanup(self):
             changes_count += num_changes
             cleanup_counts[file] = changes_count
         if changes_count > 0:
-            print(f"Changes made to {file}: {changes_count}")
+            print(f"XML clean up changes in {file}: {changes_count}")
         else:
-            print(f"No changes made to {file}")
+            print(f"No changes in {file}")
     return cleanup_counts
 
 # def xml_cleanup(self):

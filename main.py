@@ -16,6 +16,7 @@ import volnum
 import deletetxt
 import generichd
 import createreport
+import xmldesig
 
 # Initialize Tkinter Appearance
 # Note: Tkinter does not have built-in appearance modes or themes like CustomTkinter
@@ -33,13 +34,13 @@ class App(tk.Tk):
         self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
         self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
         self.sidebar_label.pack(pady=20)
-        self.sidebar_frame1 = tk.Frame(self.sidebar_frame, width=200, height=500, background="gray")
+        self.sidebar_frame1 = tk.Frame(self.sidebar_frame, width=200, height=500, background="#223556")
         self.sidebar_frame1.pack(side="bottom", fill="y", padx=10, pady=10)
-        # self.sidebar_frame2 = tk.Frame(self.sidebar_frame1, width=200, height=20)
-        # self.sidebar_frame2.pack(side="top", fill="y", padx=10, pady=10)
-        self.sidebar_note = Label(self.sidebar_frame1, width=50, height=10, text="Note: This tool is used to \nclean up XML and Metadata files.", font=("Arial", 10))
+        self.sidebar_frame2 = tk.Frame(self.sidebar_frame1, width=200, height=20, bg="#223556")
+        self.sidebar_frame2.pack(side="top", fill="y", padx=10, pady=10)
+        self.sidebar_note = Label(self.sidebar_frame1, width=50, height=10, bg="#223556", fg="white")
         self.sidebar_note.place(x=5, y=5, anchor="e")
-        self.sidebar_note1 = Label(self.sidebar_frame1, width=50, height=10, text="Please enter the folder path \nwhere the XML files are located.", font=("Arial", 10))
+        self.sidebar_note1 = Label(self.sidebar_frame1, width=50, height=10, bg="#223556")
         self.sidebar_note1.place(x=10, y=10, anchor="n")
         main_menu = tk.Menu(self)
         self.config(menu=main_menu)
@@ -51,14 +52,14 @@ class App(tk.Tk):
         self.main_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
         self.main_frame1 = tk.Frame(self.main_frame, bg="#223556")
         self.main_frame1.pack(side="top", expand=True, fill="both", padx=5, pady=5)
-        self.image_file = r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\lex1.png'
-        self.image = Image.open(self.image_file)
-        self.image = self.image.resize((50, 50))  # Resize to desired size
-        self.photo = ImageTk.PhotoImage(self.image)
-        self.image_label = Label(self.main_frame1, image=self.photo, bg="#223556")
-        self.image_label.pack(side="left", padx=10)
+        # self.image_file = r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\lex1.png'
+        # self.image = Image.open(self.image_file)
+        # # self.image = self.image.resize((50, 50))  # Resize to desired size
+        # # self.photo = ImageTk.PhotoImage(self.image)
+        # self.image_label = Label(self.main_frame1, image=self.photo, bg="#223556")
+        # self.image_label.pack(side="left", padx=10)
         self.main_label = Label(self.main_frame1, text="XML and Metadata Clean Up Tool", font=("Arial", 18), bg="#223556", fg="white")
-        self.main_label.pack(side="left", padx=10)
+        self.main_label.pack(side="bottom", padx=10, pady=10)
         self.sub_frame1 = tk.Frame(self.main_frame, bg="#223556")
         self.sub_frame1.pack(side="top", expand=False, fill="both", padx=5, pady=5)
         self.entry = tk.Entry(self.sub_frame1, width=70, font=("Arial", 8))
@@ -78,18 +79,19 @@ class App(tk.Tk):
         self.sub_frame2 = tk.Frame(self.main_frame, bg="#223556")
         self.sub_frame2.pack(side="top", expand=False, fill="both", padx=5, pady=5)
         # Create and place a label to show the percentage
-        self.percent_label = Label(self.sub_frame2, text="0%", font=("Arial", 10), bg="#223556", fg="white")
-        self.percent_label.pack(pady=1, side="top", anchor="n")
+
         # Create and place the progress bar
-        self.progress_bar = tk.Scale(self.sub_frame2, from_=0, to=100, orient="horizontal", length=525, showvalue=1, sliderlength=20, 
-                                     bg="#223556", fg="white", troughcolor="#7daaf8", highlightbackground="black")
-        self.progress_bar.set(0)  # Initial progress set to 0%
-        self.progress_bar.pack(side="bottom", anchor="w", expand=True)
+        # self.progress_bar = tk.Scale(self.sub_frame2, from_=0, to=100, orient="horizontal", length=525, showvalue=1, sliderlength=20, 
+        #                              bg="#223556", fg="white", troughcolor="#7daaf8", highlightbackground="black")
+        # self.progress_bar.set(0)  # Initial progress set to 0%
+        # self.progress_bar.pack(side="bottom", anchor="w", expand=True)
         # Create and place the status label
         self.sub_frame3 = tk.Frame(self.main_frame, bg="#223556")
-        self.sub_frame3.pack(side="bottom", expand=True, fill="both", padx=5, pady=5)
-        self.sidebar_ver = Label(self.sub_frame3, width=150, height=1, text="ver. 1.0\n© 2025 Lexology\nAll rights reserved", font=("Arial", 5))
-        self.sidebar_ver.pack(pady=10, side="bottom", expand=True, anchor="w", fill="both")
+        self.sub_frame3.pack(side="top", expand=True, fill="both", padx=5, pady=5)
+        self.sidebar_ver = Label(self.sub_frame2, width=150, height=10, bg="#223556", fg="white")
+        self.sidebar_ver.pack(pady=10, expand=True, anchor="w", fill="both")
+        self.percent_label = Label(self.sub_frame3, text="0%", font=("Arial", 5), bg="#223556", fg="white", height=1)
+        self.percent_label.pack(pady=1, side="top", anchor="n")        
     
     def exit_app(self):
         self.destroy()
@@ -117,16 +119,14 @@ class App(tk.Tk):
                     self.Revoke_button.configure(state="disabled", text="Revoke")
                     self.rerun_button.configure(state="disabled", text="rerun")
                     self.exit_app_button.configure(state="disabled", text="Exit")
-                    # Call the function to process the XML files
+                    # Eto yung mga function na tinawag mo from other files for testing kaya naka disable muna
                     bf.backup_file(self)
                     xmlcleanup.xml_cleanup(self)
-                    # volnum.xml_volnum(self)
-                    # generichd.xml_generichd(self)
-                    # dd.desig_digit(self)
-                    # d.desig_text(self)
-                    # byline.xml_byline(self)
-                    # table.xml_table(self)
-                    createreport.create_report(self)
+                    volnum.xml_volnum(self)
+                    xmldesig.desig_analysis(self)
+                    byline.xml_byline(self)
+                    table.xml_table(self)
+                    #createreport.create_report(self)
                     # xmlcleanup.create_excel(self)
                     self.submit_button.configure(state="disabled", text="Complete") 
                     self.Revoke_button.configure(state="normal", text="Revoke")
