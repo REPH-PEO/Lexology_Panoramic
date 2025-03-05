@@ -13,7 +13,8 @@ import xmlcleanup
 import volnum
 import deletetxt
 import xmldesig
-
+import contributingEd
+import authtemplate
 # Initialize Tkinter Appearance
 # Note: Tkinter does not have built-in appearance modes or themes like CustomTkinter
 
@@ -41,8 +42,8 @@ class App(tk.Tk):
         main_menu = tk.Menu(self)
         self.config(menu=main_menu)
         help_menu = tk.Menu(main_menu, tearoff=0)
-        help_menu.add_command(label="About")
-        help_menu.add_command(label="Guide")
+        help_menu.add_command(label="About", command=self.show_about)
+        help_menu.add_command(label="Guide", command=self.show_guide)
         main_menu.insert_cascade(0, label="Help", menu=help_menu)    
         self.main_frame = tk.Frame(self, bg="#223556", width=150 , height=50)
         self.main_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
@@ -92,6 +93,12 @@ class App(tk.Tk):
     def exit_app(self):
         self.destroy()
 
+    def show_about(self):
+        messagebox.showinfo("About", "Lexology Panoramic Automation Tool\nVersion 1.0\nDeveloped by: Lester & BRi\nProject Manager: Red\nBusiness Analyst: Ela\n© 2025 Lexology Panoramic")
+
+    def show_guide(self):
+        messagebox.showinfo("Guide", "This tool will do XML cleanup, Metadata checks & fixing of any invalid Tables")
+
     def check_path(self):
         checkout_folder = self.entry.get()
         if os.path.exists(checkout_folder):
@@ -117,6 +124,8 @@ class App(tk.Tk):
                     self.exit_app_button.configure(state="disabled", text="Exit")
                     # Eto yung mga function na tinawag mo from other files for testing kaya naka disable muna
                     bf.backup_file(self)
+                    contributingEd.modify_contributing_sections(self)
+                    authtemplate.modify_byline(self)
                     xmlcleanup.xml_cleanup(self)
                     volnum.xml_volnum(self)
                     xmldesig.desig_analysis(self)
