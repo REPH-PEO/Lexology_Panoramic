@@ -6,16 +6,12 @@ from openpyxl.utils import get_column_letter
 from datetime import datetime
 import os
 import backupfiles as bf
-import desigdigit as dd
-import desig as d
 import table
 import byline
 import revoke
 import xmlcleanup
 import volnum
 import deletetxt
-import generichd
-import createreport
 import xmldesig
 
 # Initialize Tkinter Appearance
@@ -29,7 +25,7 @@ class App(tk.Tk):
         self.geometry("800x500")
         self.resizable(False, False)  # Prevent window resizing
         self.configure(bg="#05162a", highlightbackground="white", borderwidth=1, relief="solid", highlightthickness=2, highlightcolor="black")
-        self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\logo4.ico')
+        self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
         self.sidebar_frame = tk.Frame(self, width=200, height=10, highlightbackground="black", borderwidth=1, relief="solid", bg="#223556")
         self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
         self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
@@ -126,7 +122,7 @@ class App(tk.Tk):
                     xmldesig.desig_analysis(self)
                     byline.xml_byline(self)
                     table.xml_table(self)
-                    #createreport.create_report(self)
+                    # createreport.create_report(self)
                     # xmlcleanup.create_excel(self)
                     self.submit_button.configure(state="disabled", text="Complete") 
                     self.Revoke_button.configure(state="normal", text="Revoke")
