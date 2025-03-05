@@ -16,7 +16,7 @@ def xml_cleanup(self):
         (re.compile(r'<se:intro><core:title>Contributing Editors<\/core:title><core:list><core:listitem><core:enum>&#x2014;<\/core:enum><core:para>'), "<se:intro><core:generic-hd>Contributing Editors&#x2014;"),
         (re.compile(r'<\/core:para><\/core:listitem><core:listitem><core:enum>&#x2014;</core:enum><core:para>'), ", "),
         (re.compile(r'<\/core:para><\/core:listitem><\/core:list><\/se:intro>'), "</core:generic-hd></se:intro>"),
-        (re.compile(r',\s[A-Z][a-z]+\s[A-Z][a-z]+(<\/core:generic-hd><\/se:intro>)'), r' and \1\2'),
+        (re.compile(r',\s([A-Z][a-z]+\s[A-Z][a-z]+)(<\/core:generic-hd><\/se:intro>)'), r' and \1\2'),
         (re.compile(r',\s([A-Z][a-z]+\s[A-Z][a-z]+)<\/core:emph><\/core:name.text><\/core:person><\/pnfo:contrib><\/pnfo:contribs><\/core:byline>'), r' and \1</core:emph></core:name.text></core:person></pnfo:contrib></pnfo:contribs></core:byline>'),
         (re.compile(r' , '), ", "),
         (re.compile(r'<core:para></core:para>'), "")
