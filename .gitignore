@@ -169,5 +169,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-logo4.ico
-logo.ico
+*.ico

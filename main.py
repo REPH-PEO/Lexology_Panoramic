@@ -26,7 +26,8 @@ class App(tk.Tk):
         self.geometry("800x500")
         self.resizable(False, False)  # Prevent window resizing
         self.configure(bg="#05162a", highlightbackground="white", borderwidth=1, relief="solid", highlightthickness=2, highlightcolor="black")
-        self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
+        #self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
+        self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\logo4.ico')
         self.sidebar_frame = tk.Frame(self, width=200, height=10, highlightbackground="black", borderwidth=1, relief="solid", bg="#223556")
         self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
         self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
