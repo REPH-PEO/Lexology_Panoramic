@@ -1,39 +1,71 @@
 import re
 import os
 import glob
+import io  
 
 def desig_analysis(self):
     file_path = self.entry.get()
+    pattern1 = re.compile(r'<core:desig value="([^"]+)">(.*?)</core:desig>')
+    pattern2 = re.compile(r'<core:desig value="(\d+)">Question (\d+)</core:desig>')
+    non_matching_pairs1 = {}
+    non_matching_pairs2 = {}
     xml_files = glob.glob(os.path.join(file_path, '*.xml'))
+    output = io.StringIO()
+
     for xml_file in xml_files:
         with open(xml_file, 'r', encoding='utf-8') as file:
-            text_data = file.read()
-        pattern_text = r'<core:desig value="([^"]+)">(.*?)</core:desig>'
-        pattern_digit = r'<core:desig value="(\d+)">Question (\d+)</core:desig>'
-        matches_text = re.findall(pattern_text, text_data)
-        matches_digit = re.findall(pattern_digit, text_data)
-        total_count = 0
-        matching_count = 0
-        not_matching_count = 0
-        for match in matches_text:
-            total_count += 1
-            value = match[0]
-            text_content = match[1].strip()
-            if value == text_content:
-                matching_count += 1
-            elif (value.isdigit() and text_content.isdigit() and int(value) == int(text_content)) or (value == 'Question 1' and text_content == '1'):
-                matching_count += 1
+            content = file.read()
+        matches1 = pattern1.findall(content)
+        total_count1 = len(matches1)
+        print(f"Total desig Country: {total_count1}")
+        match_count1 = 0
+        
+        for value, text in matches1:
+            if value == text:
+                match_count1 += 1
             else:
-                not_matching_count += 1
+                if xml_file not in non_matching_pairs1:
+                    non_matching_pairs1[xml_file] = []
+                non_matching_pairs1[xml_file].append((value, text))
 
-        print(f'Matches values/pcdata in text desig in {xml_file}: {matching_count}')
-        print(f'Do not match values/pcdata in text desig in {xml_file}: {not_matching_count}')
-        print(f'Total values/pcdata in text desig in {xml_file}: {total_count}')
-        print(f'Total values/pcdata in digit desig in {xml_file}: {len(matches_digit)}')
-        non_matching_pairs = []
-        for value_attr, value_text in matches_digit:
-            if value_attr != value_text:
-                non_matching_pairs.append((value_attr, value_text))
-        for pair in non_matching_pairs:
-            print(f"Desig value in number desig {xml_file}: {pair[0]}, Question Number: {pair[1]}")
-        print(f"Desig value do not match in number desig {xml_file}: {len(non_matching_pairs)}")
+        matches2 = pattern2.findall(content)
+        total_count2 = len(matches2)
+        print(f"Total desig Question: {total_count2}")
+
+        match_count2 = 0
+        for value, question in matches2:
+            if value == question:
+                match_count2 += 1
+            else:
+                if xml_file not in non_matching_pairs2:
+                    non_matching_pairs2[xml_file] = []
+                non_matching_pairs2[xml_file].append((value, question))
+        
+        print(f"Total matches for desig Country: {match_count1}")
+        if xml_file in non_matching_pairs1:
+            print("Non-matching desig Country below:")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", file=output)
+            print("Non-matching desig Country below:", file=output)
+            for value, text in non_matching_pairs1[xml_file]:
+                print(f"Desig Country value: {value}, Desig Country text: {text}")
+                print(f"Desig Country value: {value}, Desig Country text: {text}", file=output)
+        else:
+            print("All pairs match for desig Country.")
+   
+        print(f"Total matches for desig Question: {match_count2}")
+        if xml_file in non_matching_pairs2:
+            print("Non-matching pairs for desig Question:")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", file=output)
+            print("Non-matching pairs for desig Question:", file=output)
+            for value, question in non_matching_pairs2[xml_file]:
+                print(f"Desig Question value: {value}, Question no.: {question}", file=output)
+                print(f"Desig Question value: {value}, Question no.: {question}")
+        else:
+            print("All pairs match for desig Question.")
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", file=output)  
+    # print("Non-matching desig Country below:", file=output)      
+    # print(f"Desig Country value: {value}, Desig Country text: {text}", file=output)   
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", file=output) 
+    # print("Non-matching pairs for desig Question:", file=output)    
+    # print(f"Desig Question value: {value}, Question no.: {question}", file=output)
+    return output.getvalue()

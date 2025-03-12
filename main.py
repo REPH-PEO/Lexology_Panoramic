@@ -6,28 +6,22 @@ from openpyxl.utils import get_column_letter
 from datetime import datetime
 import os
 import backupfiles as bf
-import table
-import byline
 import revoke
-import xmlcleanup
-import volnum
 import deletetxt
-import xmldesig
-import contributingEd
-import authtemplate
-# Initialize Tkinter Appearance
-# Note: Tkinter does not have built-in appearance modes or themes like CustomTkinter
+import createexcel
+import deletexlsx
+import createreport
+
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        # Set up the window
         self.title("Lexology Panoramic")
         self.geometry("800x500")
-        self.resizable(False, False)  # Prevent window resizing
+        self.resizable(False, False)  
         self.configure(bg="#05162a", highlightbackground="white", borderwidth=1, relief="solid", highlightthickness=2, highlightcolor="black")
-        #self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
-        self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\logo4.ico')
+        self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
+        # self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\logo4.ico')
         self.sidebar_frame = tk.Frame(self, width=200, height=10, highlightbackground="black", borderwidth=1, relief="solid", bg="#223556")
         self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
         self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
@@ -71,13 +65,11 @@ class App(tk.Tk):
         self.rerun_button.pack(padx=10, side="left", anchor="w")
         self.exit_app_button = tk.Button(self.sub_frame1, text="Exit", command=self.exit_app, width=15, height=2)
         self.exit_app_button.pack(padx=10, side="left", anchor="w")
-        # Status Content Area
+
         self.sub_frame4 = tk.Frame(self.main_frame, bg="gray", width=150, height=100)
         self.sub_frame4.pack(side="top", expand=False, fill="both", padx=5, pady=5)        
         self.sub_frame2 = tk.Frame(self.main_frame, bg="#223556")
         self.sub_frame2.pack(side="top", expand=False, fill="both", padx=5, pady=5)
-        # Create and place a label to show the percentage
-
         # Create and place the progress bar
         # self.progress_bar = tk.Scale(self.sub_frame2, from_=0, to=100, orient="horizontal", length=525, showvalue=1, sliderlength=20, 
         #                              bg="#223556", fg="white", troughcolor="#7daaf8", highlightbackground="black")
@@ -103,9 +95,7 @@ class App(tk.Tk):
     def check_path(self):
         checkout_folder = self.entry.get()
         if os.path.exists(checkout_folder):
-            # Check if it's a directory or a single file
             if os.path.isdir(checkout_folder):
-                # Check if the directory contains any XML files
                 xml_files = [f for f in os.listdir(checkout_folder) if f.endswith('.xml')]
                 if not xml_files:
                     messagebox.showerror("Error", "No XML files found in the folder.")
@@ -123,17 +113,10 @@ class App(tk.Tk):
                     self.Revoke_button.configure(state="disabled", text="Revoke")
                     self.rerun_button.configure(state="disabled", text="rerun")
                     self.exit_app_button.configure(state="disabled", text="Exit")
-                    # Eto yung mga function na tinawag mo from other files for testing kaya naka disable muna
                     bf.backup_file(self)
-                    contributingEd.modify_contributing_sections(self)
-                    authtemplate.modify_byline(self)
-                    xmlcleanup.xml_cleanup(self)
-                    volnum.xml_volnum(self)
-                    xmldesig.desig_analysis(self)
-                    byline.xml_byline(self)
-                    table.xml_table(self)
-                    # createreport.create_report(self)
-                    # xmlcleanup.create_excel(self)
+                    createreport.create_report(self)
+                    createexcel.create_xlsreport(self)
+                    deletetxt.delete_txtfiles(self)
                     self.submit_button.configure(state="disabled", text="Complete") 
                     self.Revoke_button.configure(state="normal", text="Revoke")
                     self.rerun_button.configure(state="normal", text="Rerun")
@@ -145,20 +128,16 @@ class App(tk.Tk):
     def check_pathrevoke(self):
             checkout_folder = self.entry.get()
             if os.path.exists(checkout_folder):
-                    # Check for 'backup_files' folder
                 if os.path.isdir(checkout_folder):
-                    # Check for XML files in the directory
                     xml_files = [f for f in os.listdir(checkout_folder) if f.endswith('.xml')]
                     if not xml_files:
                         messagebox.showerror("Error", "No XML files found in the directory.")
                         return
-                # Check for the presence of 'backup_files' folder
                     backup_folder_path = os.path.join(checkout_folder, "prescript")
                     if not os.path.exists(backup_folder_path) or not os.path.isdir(backup_folder_path):
                         messagebox.showerror("Error", "Not processed or already revoked.")
                         return
                 elif os.path.isfile(checkout_folder):
-                    # Check if the specified file is an XML file
                     if not checkout_folder.endswith('.xml'):
                         messagebox.showerror("Error", "The specified file is not an XML file.")
                         return
@@ -171,6 +150,7 @@ class App(tk.Tk):
                     self.rerun_button.configure(state="disabled", text="Rerun")
                     self.exit_app_button.configure(state="disabled", text="Exit")
                     revoke.revoke_file(self)
+                    deletexlsx.delete_xlsx(self)
                     deletetxt.delete_txtfiles(self)
                     self.submit_button.configure(state="normal", text="Submit")
                     self.Revoke_button.configure(state="normal", text="Revoke")
