@@ -8,89 +8,78 @@ import os
 import backupfiles as bf
 import revoke
 import deletetxt
+import createreport
 import createexcel
 import deletexlsx
-import createreport
-
+import time
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Lexology Panoramic")
-        self.geometry("800x500")
+        self.title("Lexology Panoramic® ")
+        self.geometry("500x300")
         self.resizable(False, False)  
         self.configure(bg="#05162a", highlightbackground="white", borderwidth=1, relief="solid", highlightthickness=2, highlightcolor="black")
-        self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
-        # self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\logo4.ico')
-        self.sidebar_frame = tk.Frame(self, width=200, height=10, highlightbackground="black", borderwidth=1, relief="solid", bg="#223556")
-        self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
-        self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
-        self.sidebar_label.pack(pady=20)
-        self.sidebar_frame1 = tk.Frame(self.sidebar_frame, width=200, height=500, background="#223556")
-        self.sidebar_frame1.pack(side="bottom", fill="y", padx=10, pady=10)
-        self.sidebar_frame2 = tk.Frame(self.sidebar_frame1, width=200, height=20, bg="#223556")
-        self.sidebar_frame2.pack(side="top", fill="y", padx=10, pady=10)
-        self.sidebar_note = Label(self.sidebar_frame1, width=50, height=10, bg="#223556", fg="white")
-        self.sidebar_note.place(x=5, y=5, anchor="e")
-        self.sidebar_note1 = Label(self.sidebar_frame1, width=50, height=10, bg="#223556")
-        self.sidebar_note1.place(x=10, y=10, anchor="n")
+        # self.iconbitmap(r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\Lexology_Panoramic\logo4.ico')
+        self.iconbitmap(r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\logo4.ico')
+        # self.sidebar_frame = tk.Frame(self, width=200, height=10, highlightbackground="black", borderwidth=1, relief="solid", bg="#223556")
+        # self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
+        # self.sidebar_label = Label(self.sidebar_frame, text="Notes:", font=("Arial", 16), bg="#223556", fg="white")
+        # self.sidebar_label.pack(pady=20)
+        # self.sidebar_frame1 = tk.Frame(self.sidebar_frame, width=200, height=500, background="#223556")
+        # self.sidebar_frame1.pack(side="bottom", fill="y", padx=10, pady=10)
+        # self.sidebar_frame2 = tk.Frame(self.sidebar_frame1, width=200, height=20, bg="#223556")
+        # self.sidebar_frame2.pack(side="top", fill="y", padx=10, pady=10)
+        # self.sidebar_note = Label(self.sidebar_frame1, width=50, height=10, bg="#223556", fg="white")
+        # self.sidebar_note.place(x=5, y=5, anchor="e")
+        # self.sidebar_note1 = Label(self.sidebar_frame1, width=50, height=10, bg="#223556")
+        # self.sidebar_note1.place(x=10, y=10, anchor="n")
         main_menu = tk.Menu(self)
         self.config(menu=main_menu)
         help_menu = tk.Menu(main_menu, tearoff=0)
-        help_menu.add_command(label="About", command=self.show_about)
-        help_menu.add_command(label="Guide", command=self.show_guide)
+        help_menu.add_command(label="About", command=lambda: messagebox.showinfo("About", "This is a tool to clean up XML files and generate reports.\nVersion: 1.0\nDeveloped by: Lester & BRi\nProject Manager: Red\nBusiness Analyst: Ela\nFor issues and concerns, please contact: lesterjohn.reyes@reedelsevier.com or brian.labrador@reedelsevier.com"))
+        help_menu.add_command(label="Guide", command=lambda: messagebox.showinfo("Guide", "1. Enter the path of the XML file or folder containing XML files.\n2. Click Submit to start the process.\n3. Click Revoke to undo the process.\n4. Click Rerun to start a new process.\n5. Click Exit to close the application."))
         main_menu.insert_cascade(0, label="Help", menu=help_menu)    
         self.main_frame = tk.Frame(self, bg="#223556", width=150 , height=50)
         self.main_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
-        self.main_frame1 = tk.Frame(self.main_frame, bg="#223556")
+        self.main_frame1 = tk.Frame(self.main_frame, bg="#223556", width=300, height=50)
         self.main_frame1.pack(side="top", expand=True, fill="both", padx=5, pady=5)
         # self.image_file = r'C:\Users\labradbm\Downloads\Local\YB\Python\Lexology Panoramic Automation\Codes\lex1.png'
-        # self.image = Image.open(self.image_file)
-        # # self.image = self.image.resize((50, 50))  # Resize to desired size
-        # # self.photo = ImageTk.PhotoImage(self.image)
-        # self.image_label = Label(self.main_frame1, image=self.photo, bg="#223556")
-        # self.image_label.pack(side="left", padx=10)
-        self.main_label = Label(self.main_frame1, text="XML and Metadata Clean Up Tool", font=("Arial", 18), bg="#223556", fg="white")
+        self.image_file = r'\\fabwebd5.net\neptune\DataConversion\Tools\Lexology_Panoramic\Main\lex1.png'
+        self.image = Image.open(self.image_file)
+        self.image = self.image.resize((50, 50))  # Resize to desired size
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.image_label = Label(self.main_frame1, image=self.photo, bg="#223556")
+        self.image_label.pack(side="left", padx=10)
+        self.main_label = Label(self.main_frame1, text="XML and Metadata Clean Up Tool", font=("Corporate", 18), bg="#223556", fg="white")
         self.main_label.pack(side="bottom", padx=10, pady=10)
         self.sub_frame1 = tk.Frame(self.main_frame, bg="#223556")
         self.sub_frame1.pack(side="top", expand=False, fill="both", padx=5, pady=5)
         self.entry = tk.Entry(self.sub_frame1, width=70, font=("Arial", 8))
-        # self.entry.insert(0, "XML files: Enter the folder path here")
         self.entry.pack(pady=10, side="top", anchor="w", expand=True, fill="both")
-        self.submit_button = tk.Button(self.sub_frame1, text="Submit", command=self.check_path, width=15, height=2)
+        self.submit_button = tk.Button(self.sub_frame1, text="Submit", font=("Gagalin", 10), command=self.check_path, width=13, height=2)
         self.submit_button.pack(pady=10, padx=10, side="left", anchor="w")
-        self.Revoke_button = tk.Button(self.sub_frame1, text="Revoke", command=self.check_pathrevoke, width=15, height=2)
+        self.Revoke_button = tk.Button(self.sub_frame1, text="Revoke", command=self.check_pathrevoke, width=13, height=2)
         self.Revoke_button.pack(padx=10, side="left", anchor="w")
-        self.rerun_button = tk.Button(self.sub_frame1, text="Rerun", command=self.refresh_run, width=15, height=2)
+        self.rerun_button = tk.Button(self.sub_frame1, text="Rerun", command=self.refresh_run, width=13, height=2)
         self.rerun_button.pack(padx=10, side="left", anchor="w")
-        self.exit_app_button = tk.Button(self.sub_frame1, text="Exit", command=self.exit_app, width=15, height=2)
+        self.exit_app_button = tk.Button(self.sub_frame1, text="Exit", command=self.exit_app, width=13, height=2)
         self.exit_app_button.pack(padx=10, side="left", anchor="w")
-
         self.sub_frame4 = tk.Frame(self.main_frame, bg="gray", width=150, height=100)
-        self.sub_frame4.pack(side="top", expand=False, fill="both", padx=5, pady=5)        
+        self.sub_frame4.pack(side="top", expand=False, fill="both", padx=5, pady=5) 
+        self.sub_frame3 = tk.Frame(self.main_frame, bg="#223556")
+        self.sub_frame3.pack(side="top", expand=True, fill="both", padx=5, pady=5)               
         self.sub_frame2 = tk.Frame(self.main_frame, bg="#223556")
         self.sub_frame2.pack(side="top", expand=False, fill="both", padx=5, pady=5)
-        # Create and place the progress bar
-        # self.progress_bar = tk.Scale(self.sub_frame2, from_=0, to=100, orient="horizontal", length=525, showvalue=1, sliderlength=20, 
-        #                              bg="#223556", fg="white", troughcolor="#7daaf8", highlightbackground="black")
-        # self.progress_bar.set(0)  # Initial progress set to 0%
-        # self.progress_bar.pack(side="bottom", anchor="w", expand=True)
-        # Create and place the status label
-        self.sub_frame3 = tk.Frame(self.main_frame, bg="#223556")
-        self.sub_frame3.pack(side="top", expand=True, fill="both", padx=5, pady=5)
-        self.sidebar_ver = Label(self.sub_frame2, width=150, height=10, bg="#223556", fg="white")
-        self.sidebar_ver.pack(pady=10, expand=True, anchor="w", fill="both")
-        self.percent_label = Label(self.sub_frame3, text="0%", font=("Arial", 5), bg="#223556", fg="white", height=1)
-        self.percent_label.pack(pady=1, side="top", anchor="n")        
-    
+        self.percent_label = Label(self.sub_frame3, text="0%", font=("Arial", 8), bg="#223556", fg="white", height=1)
+        self.percent_label.pack(pady=1, side="top", anchor="n")         
+        self.progress_bar = tk.Scale(self.sub_frame4, orient="horizontal", length=525, sliderlength=10, 
+                                     bg="#223556", highlightbackground="#223556")
+        self.progress_bar.set(0)  
+        self.progress_bar.pack(side="bottom", anchor="w", expand=True)
+
     def exit_app(self):
         self.destroy()
-
-    def show_about(self):
-        messagebox.showinfo("About", "Lexology Panoramic Automation Tool\nVersion 1.0\nDeveloped by: Lester & BRi\nProject Manager: Red\nBusiness Analyst: Ela\n© 2025 Lexology Panoramic")
-
-    def show_guide(self):
-        messagebox.showinfo("Guide", "This tool will do XML cleanup, Metadata checks & fixing of any invalid Tables")
 
     def check_path(self):
         checkout_folder = self.entry.get()
@@ -101,7 +90,6 @@ class App(tk.Tk):
                     messagebox.showerror("Error", "No XML files found in the folder.")
                     return
             elif os.path.isfile(checkout_folder):
-                # Check if the single file is an XML file
                 if not checkout_folder.endswith('.xml'):
                     messagebox.showerror("Error", "The specified file is not an XML file.")
                     return
@@ -117,6 +105,11 @@ class App(tk.Tk):
                     createreport.create_report(self)
                     createexcel.create_xlsreport(self)
                     deletetxt.delete_txtfiles(self)
+                    for i in range(101):  
+                                    self.progress_bar.set(i)  
+                                    self.percent_label.configure(text=f"{i}% Process Complete!")  
+                                    self.update_idletasks() 
+                                    time.sleep(0.0001)  
                     self.submit_button.configure(state="disabled", text="Complete") 
                     self.Revoke_button.configure(state="normal", text="Revoke")
                     self.rerun_button.configure(state="normal", text="Rerun")
@@ -124,6 +117,8 @@ class App(tk.Tk):
                     print("Process Complete!") 
         else:
             messagebox.showerror("Error", "Invalid path")    
+                        
+        messagebox.showinfo("Complete", "Process Complete!")             
 
     def check_pathrevoke(self):
             checkout_folder = self.entry.get()
@@ -152,13 +147,19 @@ class App(tk.Tk):
                     revoke.revoke_file(self)
                     deletexlsx.delete_xlsx(self)
                     deletetxt.delete_txtfiles(self)
+                    for i in range(101):  
+                        self.progress_bar.set(i)  
+                        self.percent_label.configure(text=f"{i}% Process Complete!")
+                        self.update_idletasks() 
+                        time.sleep(0.0001)                     
                     self.submit_button.configure(state="normal", text="Submit")
                     self.Revoke_button.configure(state="normal", text="Revoke")
                     self.rerun_button.configure(state="normal", text="Rerun")
                     self.exit_app_button.configure(state="normal", text="Exit")
-                    print("Revoke Complete!")            
+                    print("Revoke Complete!")
             else:
                 messagebox.showerror("Error", "Invalid path")
+            messagebox.showinfo("Complete", "Revoke Complete!")              
 
     def refresh_run(self):
         self.submit_button.configure(state="normal", text="Submit")    

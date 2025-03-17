@@ -4,23 +4,23 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import Font, Alignment
 
-
 def create_xlsreport(self):
     file_path = os.path.expanduser(self.entry.get().strip())
     report_data = []
-    error_data = [] 
+    error_data = []
     for root, _, files in os.walk(file_path):
         for file in files:
             if file.endswith('.txt'):
                 filepath = os.path.join(root, file)
-                unit = file.replace("_report.txt", "") 
+                unit = file.replace("_report.txt", "")
                 parsed_data, errors = parse_textfile(filepath)
-                parsed_data.update({"Unit": unit})
-                report_data.append(parsed_data)
+                report_entry = dict(parsed_data)
+                report_entry["Unit"] = unit
+                report_data.append(report_entry)
                 error_data.extend(errors)
-    df = pd.DataFrame(report_data)
+    df = pd.DataFrame(report_data).drop_duplicates() 
     error_df = pd.DataFrame(error_data, columns=["Unit", "Error Reference"])
-    columns_order = ['Unit'] + [col for col in df.columns if col not in ['Unit']]
+    columns_order = ['Unit'] + [col for col in df.columns if col != 'Unit']
     df = df[columns_order]
     output_excel = os.path.join(file_path, 'Lexology_XMLCleanup_Report.xlsx')
     with pd.ExcelWriter(output_excel, engine="openpyxl") as writer:
@@ -44,45 +44,56 @@ def parse_textfile(filepath):
         "Unique year in volnum:": r"Unique year in volnum:\s+(\d+)",
         "Volnum Year:": r"Volnum Year:\s+(\d+)",
         "Title Year:": r"Title Year:\s+(\d+)",
-        "Non-matching desig Country below:": r"Desig Country value:\s+([a-zA-Z]+), Desig Country text:\s+([a-zA-Z]+)",
-        "Non-matching pairs for desig Question:": r"Desig Question value:\s+(\d+), Question no.:\s+(\d+)",
+        "Non matching Country:": r"Non matching Country:\s*\[\('(.*?)'\)\]",
+        "Non matching Question:": r"Non matching Question:\s*\[\('(.*?)'\)\]",
         "Number of accented character(s):": r"Number of accented character(s):\s+(\d+)",
         "Total tables found:": r"Total tables found:\s+(\d+)",
         "Modified tables:": r"Modified tables:\s+(\d+)",
     }
-
     data = {}
     errors = []
+    unit_name = os.path.basename(filepath).replace("_report.txt", "")
     for category, pattern in patterns.items():
         matches = re.findall(pattern, content)
-        if category == "Non-matching pairs for desig Question:":
+
+        if category == r"Non matching Country:":
             for match in matches:
-                errors.append({"Unit": os.path.basename(filepath).replace("_report.txt", ""), "Error Reference": f"Desig Question value: {match[0]}, Question no.: {match[1]}"})
-        elif category == "Non-matching desig Country below:":
+                country_matches = re.findall(r"'([a-zA-Z]+)'", match)
+                errors.append({
+                    "Unit": unit_name,
+                    "Error Reference": f"Country value: {country_matches[0]}, Country text: {country_matches[1]}"
+                })
+                print(f"Country value: {country_matches[0]}, Country text: {country_matches[1]}")
+        elif category == r"Non matching Question:":
             for match in matches:
-                errors.append({"Unit": os.path.basename(filepath).replace("_report.txt", ""), "Error Reference": f"Desig Country value: {match[0]}, Desig Country text: {match[1]}"})
+                question_matches = re.findall(r"'(\d+)'", match)
+                errors.append({
+                    "Unit": unit_name,
+                    "Error Reference": f"Question value: {question_matches[0]}, Question no.: {question_matches[1]}"
+                })
+                print(f"Question value: {question_matches[0]}, Question no.: {question_matches[1]}")
         else:
             data[category] = int(matches[0]) if matches else 0
+
     return data, errors
 
 def format_sheet(sheet):
-    """Applies formatting to a given worksheet."""
-    header_font = Font(bold=True, color="FFFFFF") 
-    for cell in sheet[1]:  
+    header_font = Font(bold=True, color="FFFFFF")
+    for cell in sheet[1]:
         cell.font = header_font
         cell.fill = openpyxl.styles.PatternFill(start_color="A9A9A9", end_color="000000", fill_type="solid")
         cell.alignment = Alignment(horizontal="center", wrap_text=True)
-        sheet.column_dimensions["A"].width = 50  
-        sheet.column_dimensions["B"].width = 12
-        sheet.column_dimensions["C"].width = 12
-        sheet.column_dimensions["D"].width = 12
-        sheet.column_dimensions["E"].width = 12
-        sheet.column_dimensions["F"].width = 12
-        sheet.column_dimensions["G"].width = 12
-        sheet.column_dimensions["H"].width = 12
-        sheet.column_dimensions["I"].width = 12
-        sheet.column_dimensions["J"].width = 12
-        sheet.column_dimensions["K"].width = 12    
+    sheet.column_dimensions["A"].width = 50
+    sheet.column_dimensions["B"].width = 12
+    sheet.column_dimensions["C"].width = 12
+    sheet.column_dimensions["D"].width = 12
+    sheet.column_dimensions["E"].width = 12
+    sheet.column_dimensions["F"].width = 12
+    sheet.column_dimensions["G"].width = 12
+    sheet.column_dimensions["H"].width = 12
+    sheet.column_dimensions["I"].width = 12
+    sheet.column_dimensions["J"].width = 12
+    sheet.column_dimensions["K"].width = 12
     for col in sheet.columns:
         for cell in col:
             cell.alignment = Alignment(horizontal="center", wrap_text=True)
@@ -93,8 +104,8 @@ def format_sheet1(sheet1):
         cell.font = header_font
         cell.fill = openpyxl.styles.PatternFill(start_color="A9A9A9", end_color="000000", fill_type="solid")
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        sheet1.column_dimensions["A"].width = 50  
-        sheet1.column_dimensions["B"].width = 80         
+    sheet1.column_dimensions["A"].width = 50
+    sheet1.column_dimensions["B"].width = 80
     for col in sheet1.columns:
         for cell in col:
             cell.alignment = Alignment(wrap_text=True)
