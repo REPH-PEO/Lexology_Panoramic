@@ -14,14 +14,15 @@ def create_xlsreport(self):
                 filepath = os.path.join(root, file)
                 unit = file.replace("_report.txt", "")
                 parsed_data, errors = parse_textfile(filepath)
-                report_entry = dict(parsed_data)
+                report_entry = {k: v for k, v in parsed_data.items() if not k.startswith("Desig ")}
                 report_entry["Unit"] = unit
                 report_data.append(report_entry)
                 error_data.extend(errors)
-    df = pd.DataFrame(report_data).drop_duplicates() 
+    df = pd.DataFrame(report_data).drop_duplicates()
     error_df = pd.DataFrame(error_data, columns=["Unit", "Error Reference"])
     columns_order = ['Unit'] + [col for col in df.columns if col != 'Unit']
     df = df[columns_order]
+    df = df.loc[:, ~df.columns.str.startswith("Check desig:")]
     output_excel = os.path.join(file_path, 'Lexology_XMLCleanup_Report.xlsx')
     with pd.ExcelWriter(output_excel, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Report")
@@ -49,6 +50,8 @@ def parse_textfile(filepath):
         "Number of accented character(s):": r"Number of accented character(s):\s+(\d+)",
         "Total tables found:": r"Total tables found:\s+(\d+)",
         "Modified tables:": r"Modified tables:\s+(\d+)",
+        "Check desig:": r"Check desig:\s+\[(.*?)\]",
+        "Core desig mismatch:": r"Core desig mismatch:\s+(\d+)",
     }
     data = {}
     errors = []
@@ -56,25 +59,24 @@ def parse_textfile(filepath):
     for category, pattern in patterns.items():
         matches = re.findall(pattern, content)
 
-        if category == r"Non matching Country:":
-            for match in matches:
-                country_matches = re.findall(r"'([a-zA-Z]+)'", match)
+        if category == "Check desig:" and matches:
+            desig_entries = eval(matches[0])  
+            for entry in desig_entries:
+                value = entry.get('value', '')
+                text = entry.get('text', '')
+                status = entry.get('status', '')
+                data[f"Desig {value}"] = status
                 errors.append({
                     "Unit": unit_name,
-                    "Error Reference": f"Country value: {country_matches[0]}, Country text: {country_matches[1]}"
+                    "Error Reference": f"Desig Value: {value}, Desig Text: {text}, Status: {status}"
                 })
-                print(f"Country value: {country_matches[0]}, Country text: {country_matches[1]}")
-        elif category == r"Non matching Question:":
-            for match in matches:
-                question_matches = re.findall(r"'(\d+)'", match)
-                errors.append({
-                    "Unit": unit_name,
-                    "Error Reference": f"Question value: {question_matches[0]}, Question no.: {question_matches[1]}"
-                })
-                print(f"Question value: {question_matches[0]}, Question no.: {question_matches[1]}")
+                print(f"Desig Value: {value}, Desig Text: {text}, Status: {status}")
         else:
-            data[category] = int(matches[0]) if matches else 0
-
+            try:
+                data[category] = int(matches[0]) if matches else 0
+            except ValueError:
+                print(f"Warning: Unable to convert {matches[0]} to an integer for category {category}.")
+                data[category] = 0
     return data, errors
 
 def format_sheet(sheet):
@@ -90,13 +92,19 @@ def format_sheet(sheet):
     sheet.column_dimensions["E"].width = 12
     sheet.column_dimensions["F"].width = 12
     sheet.column_dimensions["G"].width = 12
-    sheet.column_dimensions["H"].width = 12
+    sheet.column_dimensions["H"].width = 10
     sheet.column_dimensions["I"].width = 12
     sheet.column_dimensions["J"].width = 12
     sheet.column_dimensions["K"].width = 12
-    for col in sheet.columns:
-        for cell in col:
-            cell.alignment = Alignment(horizontal="center", wrap_text=True)
+    sheet.column_dimensions["L"].width = 12
+    sheet.column_dimensions["M"].width = 12
+    sheet.column_dimensions["N"].width = 13
+    for row in sheet.iter_rows(min_row=2): 
+        for cell in row:
+            if cell.column_letter == "A":
+                cell.alignment = Alignment(horizontal="left", wrap_text=True) 
+            else:
+                cell.alignment = Alignment(horizontal="center", wrap_text=True) 
 
 def format_sheet1(sheet1):
     header_font = Font(bold=True, color="FFFFFF")
