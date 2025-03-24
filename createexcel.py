@@ -32,6 +32,12 @@ def create_xlsreport(self):
         if not error_df.empty:
             error_sheet = writer.sheets["Reference"]
             format_sheet1(error_sheet)
+            for row in error_sheet.iter_rows(min_row=2, max_col=2, values_only=False):
+                desig_value_cell = row[1]  # Assuming "Error Reference" is in the second column
+                if "Desig Value:" in desig_value_cell.value:
+                    desig_value = desig_value_cell.value.split("Desig Value: ")[1].split(",")[0]
+                    if not desig_value.isdigit():  # Check if it's a word
+                        desig_value_cell.font = Font(bold=True)            
     print("Consolidated report in Excel saved to", output_excel)
 
 def parse_textfile(filepath):
