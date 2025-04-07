@@ -12,6 +12,8 @@ import createreport
 import createexcel
 import deletexlsx
 import time
+import urlfix
+import listfix
 
 class App(tk.Tk):
     def __init__(self):
@@ -93,6 +95,8 @@ class App(tk.Tk):
                     createreport.create_report(self)
                     createexcel.create_xlsreport(self)
                     deletetxt.delete_txtfiles(self)
+                    urlfix.wrap_core_url(self)
+                    # listfix.fix_core_list(self)
                     for i in range(101):  
                                     self.progress_bar.set(i)  
                                     self.percent_label.configure(text=f"{i}% Process Complete!")  
@@ -136,10 +140,11 @@ class App(tk.Tk):
                         self.progress_bar.set(i)  
                         self.percent_label.configure(text=f"{i}% Process Complete!")
                         self.update_idletasks() 
-                        time.sleep(0.0001) 
+                        time.sleep(0.0001)                     
                     revoke.revoke_file(self)
                     deletexlsx.delete_xlsx(self)
                     deletetxt.delete_txtfiles(self)
+                    
                     self.submit_button.configure(state="normal", text="Submit")
                     self.Revoke_button.configure(state="normal", text="Revoke")
                     self.rerun_button.configure(state="normal", text="Rerun")
