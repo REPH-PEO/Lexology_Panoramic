@@ -13,7 +13,7 @@ import createexcel
 import deletexlsx
 import time
 import urlfix
-import listfix
+# import listfix
 
 class App(tk.Tk):
     def __init__(self):
