@@ -13,7 +13,7 @@ import createexcel
 import deletexlsx
 import time
 import urlfix
-# import listfix
+import listfix
 
 class App(tk.Tk):
     def __init__(self):
@@ -96,7 +96,7 @@ class App(tk.Tk):
                     createexcel.create_xlsreport(self)
                     deletetxt.delete_txtfiles(self)
                     urlfix.wrap_core_url(self)
-                    # listfix.fix_core_list(self)
+                    listfix.fix_core_list(self)
                     for i in range(101):  
                                     self.progress_bar.set(i)  
                                     self.percent_label.configure(text=f"{i}% Process Complete!")  
